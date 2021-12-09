@@ -4,6 +4,7 @@
 #include "Adafruit_BME280.h"
 #include <WiFi.h>
 #include <ESP_Mail_Client.h>
+#include "cEthernet.h"
 
 #define MAX_TEMPERATURE            25
 #define NORMAL_TEMPERATURE         20
@@ -174,7 +175,8 @@ void setup() {
 
   dht.begin();
 
-  WiFi.mode(WIFI_STA);
+  cEthernet::setup();
+  /* WiFi.mode(WIFI_STA);
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   WiFi.reconnect();
   while (WiFi.status() != WL_CONNECTED)
@@ -182,7 +184,7 @@ void setup() {
     // return;
     Serial.print(".");
     delay(200);
-  }
+  } */
   Serial.println("");
   Serial.println("WiFi connected.");
   Serial.println("IP address: ");
@@ -193,6 +195,7 @@ void setup() {
 
   /* Set the callback function to get the sending results */
   smtp.callback(smtpCallback);
+ 
 }
 
 bool sendMessage(float temperature, bool type = 0, float otherTemperature = 0) {
