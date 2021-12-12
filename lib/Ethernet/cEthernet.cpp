@@ -66,6 +66,12 @@ void cEthernet::setup()
 {
   WiFi.onEvent(WiFiEvent);
   ETH.begin();
+
+  Serial.println("");
+  Serial.println("WiFi connected.");
+  Serial.println("IP address: ");
+  Serial.println(WiFi.localIP());
+  Serial.println();
 }
 
 
