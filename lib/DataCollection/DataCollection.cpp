@@ -1,10 +1,10 @@
 #include "DataCollection.h"
 
-#define DHTPIN 16
+#define DHTPIN 5
 #define DHTTYPE DHT22
 
 DHT dht(DHTPIN, DHTTYPE);
-Adafruit_BME280 bme(18, 19);
+Adafruit_BME280 bme(4, 3);
 
 typedef struct DataCollection::sensor_values {
     int temperature = 0;
@@ -21,7 +21,7 @@ sensor_values DataCollection::dhtValues;
 void DataCollection::setup() {
     // dht.begin();
     if (bme.begin(0x76)) {
-    Serial.println(F("BME-Sensor initialized"));
+        Serial.println(F("BME-Sensor initialized"));
     } else {
         Serial.println(F("Could not find a valid BME280 sensor, check wiring!"));
     }
@@ -44,6 +44,7 @@ void DataCollection::loop() {
     bmeValues.temperature = bme.readTemperature();
     bmeValues.humidity = bme.readHumidity();
     bmeValues.pressure = bme.readPressure()/100;
+    printMessurements();
 }
 
 int DataCollection::getHumidityDht() {

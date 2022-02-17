@@ -14,17 +14,15 @@ void Display::setup() {
 
 void Display::loop() {
   display.setTextSize(1);
+  display.setTextDatum(CC_DATUM);
   //temperature
   int _temp = DataCollection::getTempBme();
-
   display.setTextFont(7);
   display.setCursor(TFT_HEIGHT/2-23, 32);
   display.setTextColor(TFT_BLACK);
-  display.setTextDatum(CC_DATUM);
-  display.drawString(String(DataCollection::getOldTempBme(), 1));
+  display.drawString(String(DataCollection::getOldTempBme()));
   display.setTextColor(_temp>MAX_TEMPERATURE?TFT_RED:TFT_WHITE);
-  display.setCursor(TFT_HEIGHT/2-23, 32);
-  display.drawString(String(_temp, 1));
+  display.drawString(String(_temp));
   display.setFreeFont(&FreeSansBold24pt7b);
   display.drawString("             c");
   display.fillCircle(122, 22, 7, _temp>MAX_TEMPERATURE?TFT_RED:TFT_WHITE);
@@ -33,15 +31,15 @@ void Display::loop() {
   display.setTextFont(7);
   display.setTextColor(TFT_BLACK);
   display.setCursor(TFT_HEIGHT/2-23, 94);
-  display.drawString(String(DataCollection::getOldHumidityBme(), 1));
+  display.drawString(String(DataCollection::getOldHumidityBme()));
   display.setTextColor(TFT_WHITE);
-  display.drawString(String(DataCollection::getHumidityBme(), 1));
+  display.drawString(String(DataCollection::getHumidityBme()));
   display.setFreeFont(&FreeSansBold24pt7b);
   display.drawString("            %");
 }
 
 
-void dPrint(String text, int x, int y, int size, int color, int datum = 0, int backgroundColor = -1, String oldText = "", int oldTextSize = -1, boolean redraw = false, int padding = 0) {
+void Display::dPrint(String text, int x, int y, int size, int color, int datum, int backgroundColor, String oldText, int oldTextSize, boolean redraw, int padding) {
   display.setTextPadding(padding);
   display.setTextDatum(datum);
   if(backgroundColor == 0)
@@ -92,6 +90,6 @@ void dPrint(String text, int x, int y, int size, int color, int datum = 0, int b
 }
 
 //Verkürzung: Writing mit Integern
-void dPrint(int text, int x, int y, int size, int color, int datum = 0, int backgroundColor = -1, int oldText = -1, int oldTextSize = -1, boolean redraw = false, int padding = 0) {
+void Display::dPrint(int text, int x, int y, int size, int color, int datum, int backgroundColor, int oldText, int oldTextSize, boolean redraw, int padding) {
   dPrint(String(text), x, y, size, color, datum, backgroundColor, (oldText == -1) ? "" : String(oldText), oldTextSize, redraw, padding);
 }

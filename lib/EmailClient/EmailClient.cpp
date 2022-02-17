@@ -36,12 +36,12 @@ void EmailClient::setup() {
 void EmailClient::loop() {
   int t = 1;
   int temperature = DataCollection::getTempBme();
-  if(abs(t-temperature)>ERROR_MARGIN) {
-    if(!error)
-      sendMessage(temperature, 1, t);
-    error = true;
-  } else if(abs(t-temperature)<ERROR_DISABLE && error)
-    error = false;
+  // if(abs(t-temperature)>ERROR_MARGIN) {
+  //   if(!error)
+  //     sendMessage(temperature, 1, t);
+  //   error = true;
+  // } else if(abs(t-temperature)<ERROR_DISABLE && error)
+  //   error = false;
   if(temperature > MAX_TEMPERATURE) {
     alert = true;
     if(lastAlert!=0&&millis()-lastAlert<RESEND_TIME)

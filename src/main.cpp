@@ -10,10 +10,10 @@
 
 void setup() {
   Serial.begin(115200);
-  Serial.println(F("DHTxx test!"));
   cEthernet::setup();
   EmailClient::setup();
   Display::setup();
+  DataCollection::setup();
 }
 
 void loop() {
