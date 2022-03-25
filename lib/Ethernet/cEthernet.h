@@ -2,6 +2,7 @@
 #define cEthernet_h
 
 #include <ETH.h>
+#include "../Util.h"
 
 class cEthernet
 {
@@ -12,6 +13,7 @@ private:
 public:
     static void setup();
     static void loop();
+    static bool getConnected();
 };
 
 #endif

@@ -10,15 +10,16 @@
 
 void setup() {
   Serial.begin(115200);
-  cEthernet::setup();
-  EmailClient::setup();
   Display::setup();
   DataCollection::setup();
+  cEthernet::setup();
+  EmailClient::setup();
 }
 
 void loop() {
   delay(2000);
   DataCollection::loop();
+  // cEthernet::loop();
   EmailClient::loop();
   Display::loop();
 }

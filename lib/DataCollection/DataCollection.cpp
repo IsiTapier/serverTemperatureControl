@@ -31,7 +31,7 @@ void DataCollection::loop() {
     dhtValues.oldTemperature = dhtValues.temperature;
     dhtValues.oldHumidity = dhtValues.humidity;
     dhtValues.temperature = dht.readTemperature();
-    dhtValues.humidity = dht.readTemperature();
+    dhtValues.humidity = 0; //dht.readTemperature();
 
     // Check if any reads failed and exit early (to try again).
     if (isnan(dhtValues.humidity) || isnan(dhtValues.temperature) || isnan(dhtValues.pressure)) {

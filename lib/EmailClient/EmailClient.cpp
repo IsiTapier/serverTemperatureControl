@@ -3,17 +3,11 @@
 #define ERROR_MARGIN               4
 #define ERROR_DISABLE              3
 
-
-#define RESEND_TIME                2*60*60*1000
-
 #define SMTP_HOST "smtp.gmail.com"
-#define SMTP_PORT 465//esp_mail_smtp_port_587 //port 465 is not available for Outlook.com
+#define SMTP_PORT esp_mail_smtp_port_465//esp_mail_smtp_port_587 //port 465 is not available for Outlook.com
 
-#define AUTHOR_EMAIL "isajah.tappe@gmail.com"
-#define AUTHOR_PASSWORD "KoenigsKind777"
-
-#define RECEIVER_EMAIL "isajah.tappe@gmail.com"
-#define RECEIVER_WARNING "isajah.tappe@gmail.com"
+// #define AUTHOR_EMAIL "Isajah.Tappe@gmail.com"
+// #define AUTHOR_PASSWORD "KoenigsKind777"
 
 void smtpCallback(SMTP_Status status);
 
@@ -25,39 +19,44 @@ bool error = false;
 
 SMTPSession smtp;
 /* Declare the message class */
-SMTP_Message message;
 byte font_ = 1;
 
 void EmailClient::setup() {
-    smtp.debug(1);
+    smtp.debug(0);
     smtp.callback(smtpCallback);
 }
 
 void EmailClient::loop() {
-  int t = 1;
   int temperature = DataCollection::getTempBme();
+  int humidity = DataCollection::getHumidityBme();
   // if(abs(t-temperature)>ERROR_MARGIN) {
   //   if(!error)
   //     sendMessage(temperature, 1, t);
   //   error = true;
   // } else if(abs(t-temperature)<ERROR_DISABLE && error)
   //   error = false;
-  if(temperature > MAX_TEMPERATURE) {
+  if(temperature >= MAX_TEMPERATURE) {
     alert = true;
     if(lastAlert!=0&&millis()-lastAlert<RESEND_TIME)
       return;
-    if (!sendMessage(temperature))
+    if (!sendMessage(temperature, humidity))
       Serial.println("Error sending Email, " + smtp.errorReason());
     else
       lastAlert = millis();
   }
-  if(temperature < NORMAL_TEMPERATURE && alert) {
+  if(temperature <= NORMAL_TEMPERATURE && alert) {
+    if(SEND_ENTWARNUNG)
+      if(!sendMessage(temperature, humidity, 1))
+        Serial.println("Error sending Email, " + smtp.errorReason());
     alert = false;
     lastAlert = 0;
   }
 }
 
-bool EmailClient::sendMessage(float temperature, bool type, float otherTemperature) {
+bool EmailClient::sendMessage(float temperature, float humidity, bool entwarnung, bool type) {
+  if(!cEthernet::getConnected())
+    return false;
+  SMTP_Message message;
   ESP_Mail_Session session;
 
   session.server.host_name = SMTP_HOST;
@@ -70,27 +69,26 @@ bool EmailClient::sendMessage(float temperature, bool type, float otherTemperatu
   session.time.day_light_offset = 0;
 
   /* Set the message headers */
-  message.sender.name = "Server Raum Temperatur Überwachung";
+  message.sender.name = entwarnung?"Entwarnung":"Alarm";
   message.sender.email = AUTHOR_EMAIL;
-  message.subject = "Server Temperatur Alarm";
+  message.subject = "Server Raum Temperatur Überwachung";
   message.addRecipient("We", RECEIVER_WARNING);
-  if(type == 0)
-  message.addRecipient("Hausmeister", RECEIVER_EMAIL);
+  if(type)
+    message.addRecipient("Hausmeister", RECEIVER_EMAIL);
 
-  String textMsg = "Server Raum Temperatur: ";
-  textMsg+=String(temperature, 2);
-  textMsg+="°c";
-  if(type == 1) {
-    textMsg+="\nother Sensor: ";
-    textMsg+=String(otherTemperature, 2);
-    textMsg+="°c";
-  }
+  String textMsg = "Temperatur: ";
+  textMsg+=String(round(temperature));
+  textMsg+="°c\n";
+  textMsg+="Luftfeuchtigkeit: ";
+  textMsg+=String(round(humidity));
+  textMsg+="%";
+
   message.text.content = textMsg.c_str();
-  message.text.charSet = "us-ascii";
-  message.text.transfer_encoding = Content_Transfer_Encoding::enc_7bit;
-  message.priority = esp_mail_smtp_priority::esp_mail_smtp_priority_low;
+  // message.text.charSet = "us-ascii";
+  // message.text.transfer_encoding = Content_Transfer_Encoding::enc_7bit;
+  message.priority = esp_mail_smtp_priority::esp_mail_smtp_priority_high;
   message.addHeader("Message-ID: <abcde.fghij@gmail.com>");
-  if (!smtp.connect(&session))
+  if(!smtp.connect(&session))
     return 0;
 
   bool out = MailClient.sendMail(&smtp, &message);

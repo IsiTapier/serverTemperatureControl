@@ -5,8 +5,7 @@
 
 static bool eth_connected = false;
 
-void cEthernet::WiFiEvent(WiFiEvent_t event)
-{
+void cEthernet::WiFiEvent(WiFiEvent_t event) {
   switch (event) {
     case SYSTEM_EVENT_ETH_START:
       Serial.println("ETH Started");
@@ -42,8 +41,7 @@ void cEthernet::WiFiEvent(WiFiEvent_t event)
   }
 }
 
-void cEthernet::testClient(const char * host, uint16_t port)
-{
+void cEthernet::testClient(const char * host, uint16_t port) {
   Serial.print("\nconnecting to ");
   Serial.println(host);
 
@@ -62,23 +60,34 @@ void cEthernet::testClient(const char * host, uint16_t port)
   client.stop();
 }
 
-void cEthernet::setup()
-{
+void cEthernet::setup() {
   WiFi.onEvent(WiFiEvent);
   ETH.begin();
+  while(!eth_connected&&FORCE_ETHERNET) {
+    delay(1000);
+  }
 
-  Serial.println("");
-  Serial.println("WiFi connected.");
-  Serial.println("IP address: ");
-  Serial.println(WiFi.localIP());
   Serial.println();
+  // Serial.println("WiFi connected.");
+  // Serial.println("IP address: ");
+  // Serial.println(WiFi.localIP());
+  // Serial.println();
+  // if (eth_connected) {
+  //   testClient("google.com", 80);
+  // }
 }
 
 
-void cEthernet::loop()
-{
+void cEthernet::loop() {
+  while(!ETH.begin()) {
+    delay(2000);
+  }
   if (eth_connected) {
     testClient("google.com", 80);
   }
   delay(10000);
+}
+
+bool cEthernet::getConnected() {
+  return eth_connected;
 }
