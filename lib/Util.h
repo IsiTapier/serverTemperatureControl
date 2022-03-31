@@ -4,6 +4,7 @@
 #define NORMAL_TEMPERATURE         25
 
 #define RESEND_TIME                2*60*60*1000
+#define DEBUG_TIME  	           1*60*60*1000
 
 #define SEND_HAUSMEISTER           false
 #define SEND_ENTWARNUNG            false
@@ -15,4 +16,4 @@
 #define RECEIVER_EMAIL "support@jcbs.de"
 #define RECEIVER_WARNING "Isajah.Tappe@gmail.com"
 
-#define FORCE_ETHERNET false
+#define FORCE_ETHERNET true

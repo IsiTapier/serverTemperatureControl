@@ -24,6 +24,7 @@ byte font_ = 1;
 void EmailClient::setup() {
     smtp.debug(0);
     smtp.callback(smtpCallback);
+    sendMessage(0, 0);
 }
 
 void EmailClient::loop() {
@@ -50,6 +51,12 @@ void EmailClient::loop() {
         Serial.println("Error sending Email, " + smtp.errorReason());
     alert = false;
     lastAlert = 0;
+  }
+  if(millis()-lastAlert>DEBUG_TIME) {
+    if (!sendMessage(temperature, humidity, true))
+      Serial.println("Error sending Email, " + smtp.errorReason());
+    else
+      lastAlert = millis();    
   }
 }
 

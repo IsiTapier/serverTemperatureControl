@@ -5,12 +5,15 @@
 
 static bool eth_connected = false;
 
+//PC ETH MAC: 08:3A:F2:3A:C9:93, IPv4: 10.1.11.40, FULL_DUPLEX, 100Mbps DNS: 10.1.1.1
+//UFO ETH MAC: 08:3A:F2:3A:C9:93, IPv4: 10.1.10.164, FULL_DUPLEX, 100Mbps DNS: 10.1.10.26
+
 void cEthernet::WiFiEvent(WiFiEvent_t event) {
   switch (event) {
     case SYSTEM_EVENT_ETH_START:
       Serial.println("ETH Started");
       //set eth hostname here
-      ETH.setHostname("esp32-ethernet");
+      ETH.setHostname("esp32-server-emperature-control");
       break;
     case SYSTEM_EVENT_ETH_CONNECTED:
       Serial.println("ETH Connected");
@@ -20,6 +23,8 @@ void cEthernet::WiFiEvent(WiFiEvent_t event) {
       Serial.print(ETH.macAddress());
       Serial.print(", IPv4: ");
       Serial.print(ETH.localIP());
+      Serial.print(", DNS: ");
+      Serial.print(ETH.dnsIP());
       if (ETH.fullDuplex()) {
         Serial.print(", FULL_DUPLEX");
       }

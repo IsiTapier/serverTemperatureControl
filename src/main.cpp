@@ -14,13 +14,14 @@ void setup() {
   DataCollection::setup();
   cEthernet::setup();
   EmailClient::setup();
+  Serial.println("Setup finished");
 }
 
 void loop() {
-  delay(2000);
   DataCollection::loop();
   // cEthernet::loop();
   EmailClient::loop();
   Display::loop();
+  delay(2000);
 }
 
